@@ -1,19 +1,34 @@
+
 import math
 
+def memoizer(calculate_function):
 
+    class calculation_memoizer(object):
 
-from functools import lru_cache
+        def __init__(self, calculate_function):
+            self.calculate_function = calculate_function
+            self.calculations_cache = {}
 
-@lru_cache(maxsize = None)
+        def __call__(self, *args):
+            if args in self.calculations_cache:
+                return self.calculations_cache[args]
+            else:
+                self.calculations_cache[args] = self.calculate_function(*args)
+                return self.calculations_cache[args]
+
+    return calculation_memoizer(calculate_function)
+
+@memoizer
 def calculate(remaining_bricks, last_step):
     options = 0
-    if remaining_bricks/(last_step + 1) <= 2:
-        print(f"{remaining_bricks} : {last_step}")
+    if remaining_bricks/float((last_step + 1)) <= 2:
+        print("{0} : {1}".format(remaining_bricks, last_step))
         return 1
     else:
         options += 1
-    for i in range(last_step + 1, math.ceil(remaining_bricks/2)):
-        # return 1 + calculate(remaining_bricks - i, i)
+    limit = int(math.ceil(remaining_bricks/2.0))
+    for i in range(last_step + 1, limit):
+
         options += calculate(remaining_bricks - i, i)
     return options
 
